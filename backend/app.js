@@ -3,10 +3,12 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const routes = require('./routes');
-const cors = require('cors')
+const cors = require('cors');
 const corsOptions = require ('./config/corsOptions')
-const User = require('./models/user')
+require('./models/user')
+
 const app = express();
+
 
 app.use(logger('dev'));
 app.use(express.json());

@@ -1,13 +1,10 @@
 const express = require('express');
-const router = express.Router();
 const mongoose = require("mongoose")
+const usersController = require('../controllers/users')
+const router = express.Router();
 
-/* GET users listing. */
-router.get('/register', async function(req, res, next) {
-
-  const User = mongoose.model('User')
-  const clement = await User.findOne({username: 'clement'})
-  res.type('json').send(JSON.stringify(clement));
-});
+router.route('/')
+    .post(usersController.register)
+    .delete(usersController.delete)
 
 module.exports = router;
