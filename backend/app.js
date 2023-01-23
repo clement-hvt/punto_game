@@ -5,6 +5,7 @@ const logger = require('morgan');
 const routes = require('./routes');
 const cors = require('cors')
 const corsOptions = require ('./config/corsOptions')
+const User = require('./models/user')
 const app = express();
 
 app.use(logger('dev'));
