@@ -5,14 +5,16 @@ services:
     image: mongo
     ports:
       - "27017:27017"
+    volumes:
+      - /data/db
 
   api:
     build:
       context: ./
-      dockerfile: ./docker/api/Dockerfile
+      dockerfile: ./src/backend/Dockerfile
     volumes:
       - ./src/backend:/home/node/app
-      - ./src/backend/node_modules:/home/node/app
+      - /home/node/app/node_modules
     ports:
       - "3000:3000"
     links:
@@ -23,10 +25,10 @@ services:
   front:
     build:
       context: ./
-      dockerfile: ./docker/front/Dockerfile
+      dockerfile: ./src/frontend/Dockerfile
     volumes:
       - ./src/frontend:/home/node/app
-      - ./src/frontend/node_modules:/home/node/app
+      - /home/node/app/node_modules
     ports:
       - "3001:3001"
     links:
