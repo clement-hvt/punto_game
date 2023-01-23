@@ -9,9 +9,7 @@ services:
       - /data/db
 
   api:
-    build:
-      context: ./
-      dockerfile: ./backend/Dockerfile
+    build: ./backend
     volumes:
       - ./backend:/home/node/app
       - /home/node/app/node_modules
@@ -23,9 +21,7 @@ services:
       - mongo
 
   front:
-    build:
-      context: ./
-      dockerfile: ./frontend/Dockerfile
+    build: ./frontend
     volumes:
       - ./frontend:/home/node/app
       - /home/node/app/node_modules
