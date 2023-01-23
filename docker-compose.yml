@@ -1,0 +1,35 @@
+version: '3'
+services:
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - "27017:27017"
+
+  api:
+    build:
+      context: ./
+      dockerfile: ./docker/api/Dockerfile
+    volumes:
+      - ./src/backend:/home/node/app
+      - ./src/backend/node_modules:/home/node/app
+    ports:
+      - "3000:3000"
+    links:
+      - mongo
+    depends_on:
+      - mongo
+
+  front:
+    build:
+      context: ./
+      dockerfile: ./docker/front/Dockerfile
+    volumes:
+      - ./src/frontend:/home/node/app
+      - ./src/frontend/node_modules:/home/node/app
+    ports:
+      - "3001:3001"
+    links:
+      - api
+    depends_on:
+      - api
