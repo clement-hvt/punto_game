@@ -6,11 +6,14 @@ const UserSchema = new Schema({
     email: {
         type: String,
         required: true,
-        index: { unique: true }
+        unique:true,
+        sparse: true,
+        trim: true
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     games: {
         type: Array
@@ -18,14 +21,16 @@ const UserSchema = new Schema({
 });
 
 UserSchema.pre('save', function(next) {
-    if (!this.isModified('password')) return next();
-
-    bcrypt.hash(this.password, 10, function(err, hash) {
+    if (!this.isModified('password') && !this.isNew) {
+        return next();
+    }
+    bcrypt.hash(this.password, parseInt(process.env.BCRYPT_SALT), (err, hash) => {
         if (err) return next(err);
-
         this.password = hash;
         next();
     });
-})
+});
 
-module.exports = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
+
+module.exports = {User, UserSchema};

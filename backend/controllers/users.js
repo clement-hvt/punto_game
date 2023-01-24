@@ -1,8 +1,11 @@
 const mongoose = require('mongoose');
+const asyncHandler = require('express-async-handler')
 
+require('../models/user');
 
-exports.register = async function(req, res) {
-    const User = mongoose.model('User');
+const User = mongoose.model('User');
+
+exports.register = asyncHandler(async (req, res) => {
     const user = new User();
     const query = req.body;
 
@@ -19,19 +22,17 @@ exports.register = async function(req, res) {
     } else {
         res.status(409).send({error: "Account already exists."});
     }
-}
+})
 
-exports.findByEmail = function(email) {
-    const User = mongoose.model('User');
+exports.findByEmail = asyncHandler((email) => {
     return User.findOne({email});
-}
+})
 
-exports.delete = async function(res, req) {
-    const User = mongoose.model('User');
+exports.delete = asyncHandler(async (res, req) => {
     const email = res.body.email;
     User.deleteOne({email}, function (err) {
         if (err) req.status(500).send({error: 'The given account could not be deleted.'});
 
         req.send({success:'The given account could be deleted'})
     });
-}
+})
