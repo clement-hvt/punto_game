@@ -3,10 +3,10 @@ const GameSchema = require('./game')
 
 const Schema = mongoose.Schema;
 const GameMoveSchema = new Schema({
-    moveX: {
+    posY: {
         type: Number
     },
-    moveY: {
+    posY: {
         type: Number
     }
 });

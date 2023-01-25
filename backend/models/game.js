@@ -14,8 +14,15 @@ const GameSchema = new Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'GameMove'
     },
-    data: {
-        type: Array
+    status: {
+        type: String,
+        enum: ['pending', 'inprogress', 'finish', 'cancel'],
+        required: true,
+        default: 'inprogress'
+    },
+    decks: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Deck'
     }
 });
 

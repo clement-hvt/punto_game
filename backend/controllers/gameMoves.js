@@ -9,8 +9,8 @@ const Game = mongoose.model('Game');
 
 exports.addMove = asyncHandler(async (req, res) => {
     const gameMove = new GameMove({
-        moveX: req.body.moveX,
-        moveY: req.body.moveY,
+        posX: req.body.posX,
+        posY: req.body.posY,
     });
     const gameId = mongoose.Types.ObjectId(req.body.gameId);
     const game = await Game.findById(gameId)
