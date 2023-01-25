@@ -18,7 +18,7 @@ const GameSchema = new Schema({
         type: String,
         enum: ['pending', 'inprogress', 'finish', 'cancel'],
         required: true,
-        default: 'inprogress'
+        default: 'pending'
     },
     decks: {
         type: [mongoose.Schema.Types.ObjectId],

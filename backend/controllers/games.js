@@ -68,8 +68,10 @@ exports.start = asyncHandler(async (req, res) => {
         cardAllocation(game)
             .then(game => {
                 game.status = 'inprogress';
-
-                res.send(game)
+                game.save(function(err) {
+                    if(err) res.status(500).send(err)
+                    res.send({success: 'The game has been correctly initialize.'})
+                })
             })
             .catch(err => {
                 res.status(500).send(err)
@@ -138,9 +140,6 @@ function cardAllocation(game) {
             });
             game.decks.push(deck);
         }
-        game.save(function(err, game) {
-            if(err) reject(err)
-            resolve(game)
-        })
+        resolve(game)
     })
 }
