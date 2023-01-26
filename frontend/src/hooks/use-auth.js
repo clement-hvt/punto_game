@@ -59,8 +59,10 @@ function useProvideAuth() {
 
     const signup = dataForSignUp => {
         return axios.post('/users', dataForSignUp)
-            .then(res => {
-                console.log("Sign up done.")
+            .then(({data}) => {
+                setUser(data.token)
+                setUserId(data.id)
+                localStorage.setItem("token", data.token)
             })
     };
 

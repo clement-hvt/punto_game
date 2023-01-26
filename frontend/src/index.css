@@ -1,11 +1,3 @@
-:root {
-  --punto-background: #131313;
-  --punto-p-color: #E1020B;
-  --punto-u-color: #05AFE9;
-  --punto-n-color: #F1B112;
-  --punto-t-color: #84A64E;
-}
-
 #root {
   background: #131313;
   min-height: 100vh;

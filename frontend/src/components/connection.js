@@ -1,7 +1,7 @@
 import {Form, Button, Row, Container} from 'react-bootstrap'
 import {Link, useNavigate} from 'react-router-dom'
 import {useState} from "react"
-import { useAuth } from '../hooks/use-auth'
+import {useAuth} from '../hooks/use-auth'
 import '../index.css'
 import Logo from "./logo";
 
@@ -20,10 +20,10 @@ export default function Connection() {
         <Container style={{background: "#131313"}}>
             <Logo />
             <Row className="h-100 align-items-center">
-                <h1 className="display-6">Se connecter</h1>
+                <h1 className="display-6 text-light">Se connecter</h1>
                 <Form>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label className="">E-mail</Form.Label>
+                        <Form.Label  className='text-light'>E-mail</Form.Label>
                         <Form.Control
                             type="email"
                             onChange={e => setEmail(e.target.value)}
@@ -31,7 +31,7 @@ export default function Connection() {
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label>Mot de passe</Form.Label>
+                        <Form.Label className='text-light'>Mot de passe</Form.Label>
                         <Form.Control
                             type="password"
                             placeholder="Password"
@@ -39,7 +39,7 @@ export default function Connection() {
                         />
                     </Form.Group>
                     <Button
-                        variant="primary"
+                        variant="secondary"
                         type="submit"
                         onClick={e => handleSubmit(e)}
                     >

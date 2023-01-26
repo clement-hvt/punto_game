@@ -3,8 +3,6 @@ import ColumnCard from "./columnCard";
 import {puntoColor} from "../ressources/color";
 
 export default function Card({num, color}) {
-    num = 9
-    color = 'green';
     color = puntoColor[color]
     const intToStringNumber = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth'];
     const diceSchema = {

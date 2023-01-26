@@ -19,10 +19,10 @@ export default function Registration() {
         <Container fluid>
             <Logo />
             <Row className="align-items-center justify-content-center">
-                <h1 className="display-6">S'inscrire</h1>
+                <h1 className="display-6 text-light">S'inscrire</h1>
                 <Form method="POST">
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>E-mail</Form.Label>
+                        <Form.Label className='text-light'>E-mail</Form.Label>
                         <Form.Control
                             type="email"
                             onChange={e => setEmail(e.target.value)}
@@ -31,7 +31,7 @@ export default function Registration() {
                     <Row>
                         <Col>
                             <Form.Group className="mb-3" controlId="formBasicPassword">
-                                <Form.Label>Mot de passe</Form.Label>
+                                <Form.Label className='text-light'>Mot de passe</Form.Label>
                                 <Form.Control
                                     type="password"
                                     onChange={e => setPassword(e.target.value)}
@@ -40,7 +40,7 @@ export default function Registration() {
                         </Col>
                         <Col>
                             <Form.Group className="mb-3" controlId="formBasicPasswordConfirm">
-                                <Form.Label>Confirmer le mot de passe</Form.Label>
+                                <Form.Label className='text-light'>Confirmer le mot de passe</Form.Label>
                                 <Form.Control
                                     type="password"
                                     onChange={e => setConfirmPassword(e.target.value)}
@@ -49,7 +49,7 @@ export default function Registration() {
                         </Col>
                     </Row>
                     <Button
-                        variant="primary"
+                        variant="secondary"
                         type="submit"
                         onClick={e => handleSubmit(e)}
                     >S'inscrire</Button>
