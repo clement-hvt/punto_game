@@ -28,7 +28,7 @@ exports.addPlayerToGame = asyncHandler(async (req, res) => {
         if (err) {
             res.status(500).send({error: err});
         } else {
-            res.send({success: 'User has been added to the game.'});
+            res.send({success: {gameId: game._id}});
         }
     })
 })

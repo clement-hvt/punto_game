@@ -11,9 +11,11 @@ import Board from "./components/board";
 import Card from "./components/card";
 import SignInGame from "./components/signin-game";
 import {ProvideAuth} from "./hooks/use-auth";
+import Game from "./components/game";
+import GlobalDndContext from "./components/global-dnd-context";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-
+const game = new Game('63d117c6ebeb0b8fdb1e5dbb')
 root.render(
   <React.StrictMode>
       <ProvideAuth>
@@ -21,7 +23,11 @@ root.render(
               <Routes>
                   <Route path='/connexion' element={<Connection />}/>
                   <Route path='/inscription' element={<Registration />}/>
-                  <Route path='/board' element={<Board />}/>
+                  <Route path='/board' element={
+                      <GlobalDndContext>
+                        <Board game={game}/>
+                      </GlobalDndContext>
+                  }/>
                   <Route path='/card' element={<Card />}/>
                   <Route path='/signin' element={<SignInGame />}/>
                   <Route

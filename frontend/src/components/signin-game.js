@@ -1,14 +1,54 @@
-import {ToggleButton, ToggleButtonGroup, Card, Button, Row, Container, Col, InputGroup, Form} from "react-bootstrap";
-import {useState} from "react";
+import {
+    ToggleButton,
+    ToggleButtonGroup,
+    Card,
+    Button,
+    Row,
+    Container,
+    Col,
+    InputGroup,
+    Form,
+    Alert
+} from "react-bootstrap";
+import {useEffect, useState} from "react";
 import Logo from "./logo";
+import axiosConfig from "../axiosConfig";
+import {useAuth} from "../hooks/use-auth";
 
 export default function SignInGame() {
+    const auth = useAuth();
     const [nbPlayers, setNbPlayers] = useState(2)
     const [pseudo, setPseudo] = useState("")
+    const [gameId, setGameId] = useState("")
+    const [error, setError] = useState('')
+
+    const searchAvailableGame = () => {
+        axiosConfig.post('/games/subscribe', {
+            userId: auth.userId,
+            nbPlayers,
+            pseudo
+        })
+            .then(({success}) => {
+                setGameId(success.gameId);
+                console.log(gameId)
+            })
+            .catch(({error}) => {
+                setError(error)
+            })
+    }
+
+    useEffect(() => {
+        if (error.length > 0) {
+            document.getElementById('errorOnSignInGame').style.display = 'block';
+        }
+    }, [error])
 
     return (
         <Container>
             <Logo />
+            <Alert id='errorOnSignInGame' key={"danger"} variant={"danger"} style={{display: 'none'}}>
+                {error}
+            </Alert>
             <Card>
                 <Card.Header>Préparation de la partie</Card.Header>
                 <Card.Body>
@@ -33,7 +73,7 @@ export default function SignInGame() {
                             </Row>
                         </Col>
                     </Row>
-                    <Button variant="primary">Lancer la recherche</Button>
+                    <Button variant="primary" onSubmit={searchAvailableGame}>Lancer la recherche</Button>
                 </Card.Body>
             </Card>
         </Container>

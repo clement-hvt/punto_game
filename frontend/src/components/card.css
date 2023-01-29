@@ -1,16 +1,16 @@
 .dice {
     padding: 4px;
     background-color: #444;
-    width: 104px;
-    height: 104px;
+    width: 100%;
+    height: 100%;
     border-radius: 10%;
     margin-right : 10px;
     border: #DDD 1px;
 }
 .dot{
     display: block;
-    width: 18px;
-    height: 18px;
+    width: 1vh;
+    height: 1vh;
     border-radius: 50%;
 }
 .first-face {

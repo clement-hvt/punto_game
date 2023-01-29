@@ -9,9 +9,7 @@ const User = mongoose.model('User');
 
 exports.connection = asyncHandler(async (req, res) => {
     const {email, password} = req.body;
-    console.log({email, password})
     let user = await User.findOne({email});
-    console.log(user)
     if (user) {
         user.verifyPassword(password, function(err, isMatch) {
             if (err || !isMatch) res.status(401).send({error: 'Authentication failed.'});
@@ -34,5 +32,5 @@ exports.connectionWithToken = asyncHandler(async (req, res) => {
     if (!user) res.status(401).send({error: 'Authentication failed.'});
 
     const newToken = user.getToken()
-    res.send({newToken, id: user._id});
+    res.send({token: newToken, id: user._id});
 })
