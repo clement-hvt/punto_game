@@ -11,26 +11,29 @@ import {
     Alert
 } from "react-bootstrap";
 import {useEffect, useState} from "react";
-import Logo from "./logo";
-import axiosConfig from "../axiosConfig";
-import {useAuth} from "../hooks/use-auth";
+import Logo from "../logo";
+import axiosConfig from "../../axiosConfig";
+import {useAuth} from "../../hooks/use-auth";
+import {useNavigate} from "react-router-dom";
+import {useGame} from "../../hooks/use-game";
 
 export default function SignInGame() {
     const auth = useAuth();
+    const game = useGame()
     const [nbPlayers, setNbPlayers] = useState(2)
     const [pseudo, setPseudo] = useState("")
-    const [gameId, setGameId] = useState("")
     const [error, setError] = useState('')
 
+    const navigate = useNavigate();
     const searchAvailableGame = () => {
         axiosConfig.post('/games/subscribe', {
             userId: auth.userId,
             nbPlayers,
             pseudo
         })
-            .then(({success}) => {
-                setGameId(success.gameId);
-                console.log(gameId)
+            .then(({data}) => {
+                game.setGameId(data.success.gameId)
+                navigate('/game/waitingroom')
             })
             .catch(({error}) => {
                 setError(error)
@@ -38,7 +41,7 @@ export default function SignInGame() {
     }
 
     useEffect(() => {
-        if (error.length > 0) {
+        if (error?.length > 0) {
             document.getElementById('errorOnSignInGame').style.display = 'block';
         }
     }, [error])
@@ -73,11 +76,9 @@ export default function SignInGame() {
                             </Row>
                         </Col>
                     </Row>
-                    <Button variant="primary" onSubmit={searchAvailableGame}>Lancer la recherche</Button>
+                    <Button variant="primary" onClick={searchAvailableGame}>Lancer la recherche</Button>
                 </Card.Body>
             </Card>
         </Container>
-
-
     )
 }

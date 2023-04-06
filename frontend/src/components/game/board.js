@@ -1,7 +1,8 @@
 import Card from "./card";
 import BoardSquare from "./board-square";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Deck from "./deck";
+import {useGame} from "../../hooks/use-game";
 
 function renderSquare(i, y, game, updateBoard) {
     const x = i % 11;
@@ -13,10 +14,12 @@ function renderSquare(i, y, game, updateBoard) {
 function renderCard(x, y, game){
     let card = game.squareIsOccupied(x, y)
     if (card) {
-        return <Card num={card.num} color={card.color}/>
+        return <Card num={card.number} color={card.color}/>
     }
 }
-export default function Board({game}) {
+export default function Board() {
+    const game = useGame();
+
     const [board, updateBoard] = useState([]);
 
     const square = [];

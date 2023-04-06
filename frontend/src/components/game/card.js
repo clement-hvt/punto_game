@@ -1,8 +1,8 @@
 import './card.css'
 import ColumnCard from "./columnCard";
-import {puntoColor} from "../ressources/color";
+import {puntoColor} from "../../ressources/color";
 import {useDrag} from "react-dnd";
-import {dragTypes} from "../ressources/drag-types";
+import {dragTypes} from "../../ressources/drag-types";
 
 function generateCard(num , color){
     color = puntoColor[color]

@@ -1,6 +1,6 @@
 import {useDrop} from "react-dnd";
-import {dragTypes} from "../ressources/drag-types";
-import {puntoColor} from "../ressources/color";
+import {dragTypes} from "../../ressources/drag-types";
+import {puntoColor} from "../../ressources/color";
 
 const square = {
     height: '9.09%',

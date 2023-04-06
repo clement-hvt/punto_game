@@ -5,13 +5,15 @@ const Schema = mongoose.Schema;
 const DeckSchema = new Schema({
     player: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        ref: 'User'
     },
     cards: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Card',
-        required: true
+    },
+    currentCard: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Card',
     }
 });
 
