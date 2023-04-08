@@ -2,7 +2,6 @@ const {Server} = require('socket.io');
 const mongoose = require('mongoose');
 require('../models/user');
 require('../models/game');
-const {start} = require("../controllers/games");
 const {Deck} = require("../models/deck");
 const {Card} = require("../models/card");
 const {cardAllocation} = require("../business/GameBusiness");
@@ -31,7 +30,8 @@ class GameSocket {
         if (!game) {
             callback({status: 'error', msg:`You have not been added to the room ${gameId}`})
         } else {
-            socket.join([gameId, `player${GameSocket.getPlayerIndex(game, userId)}`])
+            const roomId = `${game._id}-${userId}`
+            socket.join([gameId, roomId])
 
             if (game.players.length === game.nbPlayers) {
                 cardAllocation(game)
@@ -56,16 +56,32 @@ class GameSocket {
         }
     }
 
-    static start(game) {
+    static async start(game) {
         game.currentPlayer = game.players[0]
+        const currentPlayerObjectId = game.currentPlayer.toString()
         const playerIndex = GameSocket.getPlayerIndex(game, game.currentPlayer)
 
-        game.save(async err => {
-            if (err) {
-                GameSocket.io.to([game._id, `player${playerIndex}`]).emit('next-card', {error: 'the card could not be distributed'})
-            } else {
-                const deckId = game.decks[playerIndex]._id;
+        await GameSocket.#sendNextCard(game, playerIndex, currentPlayerObjectId)
+    }
+    static async nextPlayer(game) {
+        const currentPlayer = game.currentPlayer
+        const currentPlayerIndex = GameSocket.getPlayerIndex(game, currentPlayer)
+        const nextPlayer = game.players[currentPlayerIndex + 1] ?? game.players[0]
+        const nextPlayerIndex = game.players[currentPlayerIndex + 1] ? currentPlayerIndex + 1 : 0
+        game.currentPlayer = nextPlayer
 
+        await GameSocket.#sendNextCard(game, nextPlayerIndex, nextPlayer.toString())
+    }
+
+    static #sendNextCard(game, playerIndex, playerObjectId) {
+        return new Promise((resolve, reject) => {
+            game.save(async err => {
+                const roomId = `${game._id}-${playerObjectId}`
+                if (err) {
+                    GameSocket.io.to(roomId).emit('next-card', {error: 'the card could not be distributed'})
+                    reject()
+                }
+                const deckId = game.decks[playerIndex]._id;
                 const deck = await Deck.findById(deckId)
                 const randomCard = deck => deck.splice((Math.random() * deck.length) | 0, 1) //take random card and remove it
 
@@ -76,14 +92,20 @@ class GameSocket {
 
                 deck.save(err => {
                     if (err) {
-                        GameSocket.io.to([game._id, `player${playerIndex}`]).emit('next-card', {error: err})
+                        GameSocket.io.to(roomId).emit('next-card', {error: err})
+                        reject()
                     } else {
-                        GameSocket.io.to([game._id, `player${playerIndex}`]).emit('next-card', {card})
+                        GameSocket.io.to(roomId).emit('next-card', {card})
+                        console.log(roomId)
+                        resolve()
                     }
                 })
-            }
+            })
         })
+    }
 
+    static emitCardPlaced(gameId, roomId, card, move) {
+        GameSocket.io.to(gameId).except(roomId).emit('card-placed', {card, move})
     }
 
     static getPlayerIndex(game, userId) {

@@ -17,6 +17,7 @@ function generateCard(num , color){
     }
     const diceElement = [];
     const schema = diceSchema[intToStringNumber[num-1]]
+
     if (schema) {
         for(let i = 0; i < schema.length; i++) {
             diceElement.push(<ColumnCard key={`${num}-${color}-${i}`} nbrDot={schema[i]} color={color}/>)
@@ -29,20 +30,23 @@ function generateCard(num , color){
     return [intToStringNumber[num-1], diceElement]
 }
 
-export default function Card({num, color}) {
-    const [{isDragging}, drag] = useDrag(() => ({
+export default function Card({number, color, cardId, isDraggable}) {
+    const [{isDragging, canDrag}, drag] = useDrag(() => ({
         type: dragTypes.CARD,
         item: {
             color,
-            num
+            number,
+            cardId
         },
         collect: monitor => ({
             isDragging: !!monitor.isDragging(),
+            canDrag: !!monitor.canDrag()
         }),
+        canDrag: () => isDraggable
     }))
-    const [stringNumber, dice] = generateCard(num, color)
+    const [stringNumber, dice] = generateCard(number, color)
 
     return (
-        <div ref={drag} className={`dice ${stringNumber}-face`}>{dice}</div>
+        <div key={`${number}-${color}`} ref={drag} className={`dice ${stringNumber}-face`}>{dice}</div>
     )
 }

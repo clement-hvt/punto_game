@@ -3,7 +3,13 @@ const asyncHandler = require('express-async-handler');
 
 require('../models/game');
 require('../models/gameMove');
+require('../models/user');
+
 const {Card} = require("../models/card");
+const {User} = require("../models/user");
+const GameSocket = require("../websocket/game-socket");
+const jwt = require("jwt-simple");
+const {Deck} = require("../models/deck");
 
 const GameMove = mongoose.model('GameMove');
 const Game = mongoose.model('Game');
@@ -29,15 +35,29 @@ exports.addMove = asyncHandler(async (req, res) => {
     const canBeHad = game.cardCanBeHad(gameMove.posX, gameMove.posY, card)
 
     if(canBeHad) {
-        gameMove.save(function (err, gameMove) {
+        gameMove.card = card
+        gameMove.save((err, gameMove) => {
             if (err) {
                 res.status(500).send({error: err});
             } else {
                 game.moves.push(gameMove)
-                game.save(function (err, game) {
+                game.save(async (err, game) => {
                     if (err) {
                         res.status(500).send({error: err});
                     } else {
+                        const {id} = jwt.decode(req.headers.authorization, process.env.JWT_SECRET)
+
+                        const playerIndex = GameSocket.getPlayerIndex(game, id)
+                        const deckId = game.decks[playerIndex]._id;
+                        await Deck.updateOne(
+                            {_id: deckId},
+                            { $pull: { cards: card._id }}
+                        )
+
+                        const roomId = `${game._id}-${id}`
+                        GameSocket.emitCardPlaced(gameId._id.toString(), roomId, card, gameMove.toJSON())
+
+                        await GameSocket.nextPlayer(game)
                         res.send({success: 'Move has been added to the game.'});
                     }
                 })

@@ -1,6 +1,8 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
+require('../models/gameMove')
+const GameMove = mongoose.model('GameMove')
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 const GameSchema = new Schema({
     players: {
         type: [mongoose.Schema.Types.ObjectId],
@@ -30,10 +32,16 @@ const GameSchema = new Schema({
     }
 });
 
-GameSchema.methods.cardCanBeHad = function (posX, posY, card) {
-    const cardPositions = []
+GameSchema.methods.cardCanBeHad = async function (posX, posY, card) {
+    let cardPositions = Array(11)
+    for(let i = 0; i < cardPositions.length; i++) {
+        cardPositions[i] = Array(11)
+    }
 
-    this.moves.forEach(move => cardPositions[posX][posY] = move.card)
+    for (const moveId of this.moves) {
+        const move = await GameMove.findById(moveId)
+        cardPositions[move.posX][move.posY] = move.card
+    }
 
     let hasCardAround = false;
     if (posX && posY) {

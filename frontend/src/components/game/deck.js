@@ -18,7 +18,7 @@ export default function Deck() {
         <div style={{width: `${dynamicWidth}px`, height: `${dynamicHeight}px`}}>
             {
                 Object.keys(card).length !== 0 ?
-                    <Card num={card.number} color={card.color}/> :
+                    <Card number={card.number} color={card.color} cardId={card._id} isDraggable={true}/> :
                     null
             }
         </div>

@@ -22,6 +22,7 @@ function useProvideGame() {
     const [socketIo, setSocketIo] = useState(null)
     const [isStart, setIsStart] = useState(false)
     const [currentCard, setCurrentCard] = useState({})
+    const isFirstCard = useRef(true)
 
     /**
      * @param number x
@@ -30,23 +31,36 @@ function useProvideGame() {
      * @param color
      * @param _id
      */
-    const addCardToBoard = async (x, y, {color, number, _id}) => {
+    const addCardToBoard = async (x, y, {color, number, cardId}) => {
         await axiosConfig.post('/gameMoves', {
             posX: x,
             posY: y,
             gameId,
-            cardId: _id
+            cardId
         })
             .then(({data}) => {
                 setCardPositions((previousCardPositions) => {
                     previousCardPositions[x][y] = {color, number}
-                    setCardPositions(previousCardPositions)
+                    return previousCardPositions
                 })
+                if (isFirstCard.current) {
+                    isFirstCard.current = false
+                }
                 setCurrentCard({})
             })
             .catch(({error}) => {
                 console.error('impossible to place the card here')
             })
+    }
+
+    const addCardFromOtherPlayer = (x, y, {color, number}) => {
+        setCardPositions((previousCardPositions) => {
+            previousCardPositions[x][y] = {color, number}
+            return previousCardPositions
+        })
+        if (isFirstCard.current) {
+            isFirstCard.current = false
+        }
     }
     const hasCardAround = (x, y) => {
         let hasCardAround = false;
@@ -67,16 +81,17 @@ function useProvideGame() {
                 toTheLeft ||
                 toTheRight ||
                 up ||
-                down
+                down ||
+                (isFirstCard && x === 5 && y === 5)
             ) {
                 hasCardAround = true
             }
         }
         return hasCardAround
     }
-    const canDrop = (x, y, {num}) => {
+    const canDrop = (x, y, {number}) => {
         const isOccupied = squareIsOccupied(x, y)
-        return (isOccupied && isOccupied.number < num) || (!isOccupied && hasCardAround(x, y))
+        return (isOccupied && isOccupied.number < number) || (!isOccupied && hasCardAround(x, y))
     }
 
     const squareIsOccupied = (x, y) => {
@@ -108,7 +123,6 @@ function useProvideGame() {
     }, [auth.userId, gameId, isStart, socketIo])
 
     const calledOnce = useRef(false)
-    const isFirstCard = useRef(true)
     useEffect(() => {
         if (!isStart || calledOnce.current) return
 
@@ -121,12 +135,11 @@ function useProvideGame() {
         }
 
         socketIo.on('next-card', ({card}) => {
-            console.log(card)
             setCurrentCard(card)
-            if(isFirstCard) {
-                addCardToBoard(5, 5, card)
-                isFirstCard.current = false
-            }
+        })
+
+        socketIo.on('card-placed', ({move, card}) => {
+            addCardFromOtherPlayer(move.posX, move.posY, card)
         })
 
         calledOnce.current = true;

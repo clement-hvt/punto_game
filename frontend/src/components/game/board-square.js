@@ -28,8 +28,8 @@ export default function BoardSquare({x, y, game, updateBoard, children}) {
     const [{ isOver, canDrop}, drop] = useDrop(() => ({
         accept: dragTypes.CARD,
         drop: (item) => {
-            game.addCardToBoard(x, y, item);
-            updateBoard(item);
+            game.addCardToBoard(x, y, item)
+            updateBoard(item)
         },
         canDrop: (item) => game.canDrop(x, y, item),
         collect: monitor => ({
