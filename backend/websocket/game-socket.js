@@ -96,7 +96,6 @@ class GameSocket {
                         reject()
                     } else {
                         GameSocket.io.to(roomId).emit('next-card', {card})
-                        console.log(roomId)
                         resolve()
                     }
                 })

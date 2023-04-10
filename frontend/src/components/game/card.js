@@ -31,6 +31,7 @@ function generateCard(num , color){
 }
 
 export default function Card({number, color, cardId, isDraggable}) {
+    // eslint-disable-next-line no-unused-vars
     const [{isDragging, canDrag}, drag] = useDrag(() => ({
         type: dragTypes.CARD,
         item: {

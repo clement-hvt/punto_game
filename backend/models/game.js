@@ -32,16 +32,8 @@ const GameSchema = new Schema({
     }
 });
 
-GameSchema.methods.cardCanBeHad = async function (posX, posY, card) {
-    let cardPositions = Array(11)
-    for(let i = 0; i < cardPositions.length; i++) {
-        cardPositions[i] = Array(11)
-    }
-
-    for (const moveId of this.moves) {
-        const move = await GameMove.findById(moveId)
-        cardPositions[move.posX][move.posY] = move.card
-    }
+GameSchema.methods.cardCanBeHad = function (posX, posY, card) {
+   const cardPositions = this.getCardPositions()
 
     let hasCardAround = false;
     if (posX && posY) {
@@ -73,6 +65,65 @@ GameSchema.methods.cardCanBeHad = async function (posX, posY, card) {
     let isOccupied = cardPositions?.[posX]?.[posY]
 
     return (isOccupied && isOccupied.number < card.number) || (!isOccupied && hasCardAround)
+}
+
+GameSchema.methods.isWinning = function (playerColors) {
+    const alignedCardsForWin = this.nbPlayers === 2 ? 5 : 4
+
+    const cardPositions = this.getCardPositions()
+
+    let followedCards = 1
+    let isWinning = false
+    function checkPosition(previousCard, startPointX, startPointY , nextX, nextY) {
+
+        const nextCard = cardPositions?.[startPointX + nextX]?.[startPointY + nextY]
+        if (nextCard?.color === previousCard.color) {
+            followedCards++;
+            checkPosition(nextCard, startPointX + nextX, startPointY + nextY, nextX, nextY)
+        }
+
+        if (followedCards !== 1 && followedCards !== alignedCardsForWin) {
+            followedCards = 1
+        } else if (followedCards === alignedCardsForWin) {
+            isWinning = true
+        }
+    }
+
+    for (let i = 0; i < cardPositions.length; i++) {
+        for (let j = 0; j < cardPositions.length; j++) {
+            const card = cardPositions[i][j]
+            if (!card || isWinning || !playerColors.includes(card.color) ) {
+                continue
+            }
+
+            if (cardPositions?.[i + 1][j]?.color === card.color) { // check right
+                checkPosition(cardPositions?.[i + 1][j], i, j, 1, 0)
+            }
+            if (cardPositions[i]?.[j + 1]?.color === card.color && !isWinning) { // check below
+                checkPosition(cardPositions[i]?.[j + 1], i, j, 0, 1)
+            }
+            if (cardPositions?.[i + 1]?.[j + 1]?.color === card.color) { // check diagonally right
+                checkPosition(cardPositions?.[i + 1]?.[j + 1], i, j, 1, 1)
+            }
+            if (cardPositions?.[i - 1]?.[j - 1]?.color === card.color && !isWinning) { // check diagonally left
+                checkPosition(cardPositions?.[i - 1]?.[j - 1], i, j, -1, -1)
+            }
+        }
+    }
+
+    return isWinning
+}
+
+GameSchema.methods.getCardPositions = function () {
+    let cardPositions = Array(11)
+    for(let i = 0; i < cardPositions.length; i++) {
+        cardPositions[i] = Array(11)
+    }
+
+    for (const move of this.moves) {
+        cardPositions[move.posX][move.posY] = move.card
+    }
+    return cardPositions
 }
 
 const Game = mongoose.model('Game', GameSchema);

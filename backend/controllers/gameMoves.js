@@ -15,11 +15,26 @@ const GameMove = mongoose.model('GameMove');
 const Game = mongoose.model('Game');
 
 exports.addMove = asyncHandler(async (req, res) => {
+    const {id: playerId} = jwt.decode(req.headers.authorization, process.env.JWT_SECRET)
+
     const gameId = mongoose.Types.ObjectId(req.body.gameId);
-    const game = await Game.findById(gameId)
+    let game = await Game.findOne({_id: gameId})
+        .populate({
+            path: 'moves',
+            populate: {path: 'card'}
+        })
+        .populate({
+            path: 'decks',
+            populate: {path: 'cards'}
+        })
+        .exec()
+
     if (!game) {
         throw new Error(`Game was not found with id ${gameId}`)
     }
+
+    const playerDeck = game.decks.filter(deck => deck.player.toString() === playerId)
+    const colors = playerDeck[0].getPlayerColors()
 
     const cardId = mongoose.Types.ObjectId(req.body.cardId);
     const card = await Card.findById(cardId)
@@ -41,20 +56,20 @@ exports.addMove = asyncHandler(async (req, res) => {
                 res.status(500).send({error: err});
             } else {
                 game.moves.push(gameMove)
+                const isWinning = game.isWinning(colors)
+                console.log(isWinning)
                 game.save(async (err, game) => {
                     if (err) {
                         res.status(500).send({error: err});
                     } else {
-                        const {id} = jwt.decode(req.headers.authorization, process.env.JWT_SECRET)
-
-                        const playerIndex = GameSocket.getPlayerIndex(game, id)
+                        const playerIndex = GameSocket.getPlayerIndex(game, playerId)
                         const deckId = game.decks[playerIndex]._id;
                         await Deck.updateOne(
                             {_id: deckId},
                             { $pull: { cards: card._id }}
                         )
 
-                        const roomId = `${game._id}-${id}`
+                        const roomId = `${game._id}-${playerIndex}`
                         GameSocket.emitCardPlaced(gameId._id.toString(), roomId, card, gameMove.toJSON())
 
                         await GameSocket.nextPlayer(game)

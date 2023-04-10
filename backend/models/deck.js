@@ -17,6 +17,14 @@ const DeckSchema = new Schema({
     }
 });
 
+DeckSchema.methods.getPlayerColors = function() {
+    const colors = []
+    for (const card of this.cards) {
+        colors.indexOf(card.color) === -1 ? colors.push(card.color) : null
+    }
+    return colors
+}
+
 const Deck = mongoose.model('Deck', DeckSchema);
 
 module.exports = {Deck}
