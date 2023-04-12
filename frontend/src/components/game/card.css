@@ -1,0 +1,58 @@
+.dice {
+    padding: 4px;
+    background-color: #444;
+    width: 100%;
+    height: 100%;
+    border-radius: 10%;
+    margin-right : 10px;
+    border: #DDD 1px;
+}
+.dot{
+    display: block;
+    width: 1vh;
+    height: 1vh;
+    border-radius: 50%;
+}
+.first-face {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.second-face{
+    display: flex ;
+    justify-content: space-between;
+}
+
+.second-face .dot:nth-of-type(2) {
+    align-self: flex-end;
+}
+
+.third-face {
+    display: flex;
+    justify-content: space-between;
+}
+
+.third-face .dot:nth-of-type(1) {
+    align-self :flex-end;
+}
+
+.third-face .dot:nth-of-type(2) {
+    align-self :center;
+}
+
+
+.fourth-face , .sixth-face, .fifth-face, .seventh-face, .eighth-face, .ninth-face{
+    display: flex;
+    justify-content: space-between;
+}
+
+.fourth-face .column , .sixth-face .column, .fifth-face .column, .seventh-face .column, .eighth-face .column, .ninth-face .column{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.fifth-face .column:nth-of-type(2), .seventh-face .column:nth-of-type(2) {
+    justify-content: center;
+}
