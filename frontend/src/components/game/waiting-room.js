@@ -1,9 +1,8 @@
-import {Container, Row, Spinner} from "react-bootstrap";
-import Logo from "../logo";
-import {useNavigate} from "react-router-dom";
-import {io} from "socket.io-client";
-import {useGame} from "../../hooks/use-game";
-import {useEffect, useRef} from "react";
+import {Row, Spinner} from "react-bootstrap"
+import {useNavigate} from "react-router-dom"
+import {io} from "socket.io-client"
+import {useGame} from "../../hooks/use-game"
+import {useEffect, useRef} from "react"
 
 export default function WaitingRoom() {
     const navigate = useNavigate()

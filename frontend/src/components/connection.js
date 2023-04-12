@@ -1,9 +1,8 @@
-import {Form, Button, Row, Container} from 'react-bootstrap'
+import {Form, Button, Row} from 'react-bootstrap'
 import {Link, useNavigate} from 'react-router-dom'
 import {useState} from "react"
 import {useAuth} from '../hooks/use-auth'
 import '../index.css'
-import Logo from "./logo";
 
 export default function Connection() {
     const auth = useAuth();

@@ -4,18 +4,13 @@ import {
     Card,
     Button,
     Row,
-    Container,
-    Col,
-    InputGroup,
-    Form,
     Alert
-} from "react-bootstrap";
-import {useEffect, useState} from "react";
-import Logo from "../logo";
-import axiosConfig from "../../axiosConfig";
-import {useAuth} from "../../hooks/use-auth";
-import {useNavigate} from "react-router-dom";
-import {useGame} from "../../hooks/use-game";
+} from "react-bootstrap"
+import {useEffect, useState} from "react"
+import axiosConfig from "../../axiosConfig"
+import {useAuth} from "../../hooks/use-auth"
+import {useNavigate} from "react-router-dom"
+import {useGame} from "../../hooks/use-game"
 
 export default function SignInGame() {
     const auth = useAuth()
