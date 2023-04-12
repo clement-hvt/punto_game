@@ -56,8 +56,7 @@ exports.addMove = asyncHandler(async (req, res) => {
                 res.status(500).send({error: err});
             } else {
                 game.moves.push(gameMove)
-                const isWinning = game.isWinning(colors)
-                console.log(isWinning)
+
                 game.save(async (err, game) => {
                     if (err) {
                         res.status(500).send({error: err});
@@ -70,9 +69,21 @@ exports.addMove = asyncHandler(async (req, res) => {
                         )
 
                         const roomId = `${game._id}-${playerIndex}`
-                        GameSocket.emitCardPlaced(gameId._id.toString(), roomId, card, gameMove.toJSON())
 
-                        await GameSocket.nextPlayer(game)
+                        const isWinning = game.isWinning(colors)
+
+                        if (isWinning) {
+                            GameSocket.emitWinner(gameId._id.toString(), playerId)
+                            await Game.updateOne(
+                                {_id: gameId},
+                                { status: 'finish'}
+                            )
+                        } else {
+                            GameSocket.emitCardPlaced(gameId._id.toString(), roomId, card, gameMove.toJSON())
+
+                            await GameSocket.nextPlayer(game)
+                        }
+
                         res.send({success: 'Move has been added to the game.'});
                     }
                 })

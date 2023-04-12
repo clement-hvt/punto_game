@@ -2,6 +2,12 @@ const {Game} = require("../models/game");
 const {Card} = require("../models/card");
 const {Deck} = require("../models/deck");
 
+/**
+ * Finds a new game where the player is not in it
+ *
+ * @param nbPlayers
+ * @param playerId
+ */
 exports.getGameNotStarted = function (nbPlayers, playerId) {
     const arrayForNbPlayerPerGame = [
         {'players.1': {'$exists': false}},
@@ -61,10 +67,11 @@ exports.cardAllocation = function(game) {
                 case 3:
                     deck = createDeckWithColor([randomColor()]);
                     // Get random card in the shared cards
-                    for (let i = 0; i < 6; i++) {
-                        let randomCard = sharedCards.cards.splice((Math.random() * sharedCards.cards.length) | 0, 1)
+                    for (let i = 0; i < 3; i++) {
+                        let randomCard = sharedCards.cards.splice((Math.random() * sharedCards.cards.length) | 0, 1)[0]
                         deck.cards.push(randomCard)
                     }
+
                     break;
                 default:
                     deck = createDeckWithColor([randomColor()]);

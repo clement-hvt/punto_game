@@ -9,24 +9,27 @@ import Connection from "./components/connection";
 import Registration from "./components/registration";
 import {ProvideAuth} from "./hooks/use-auth";
 import GameRoutes from "./components/game/GameRoutes";
+import Layout from "./components/Layout";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
       <ProvideAuth>
           <BrowserRouter>
-              <Routes>
-                  <Route path='/connexion' element={<Connection />}/>
-                  <Route path='/inscription' element={<Registration />}/>
-                  <Route
-                      path='/game/*'
-                      element={
-                          <RequireAuth>
-                             <GameRoutes/>
-                          </RequireAuth>
-                      }
-                  />
-              </Routes>
+              <Layout>
+                  <Routes>
+                      <Route path='/connexion' element={<Connection />}/>
+                      <Route path='/inscription' element={<Registration />}/>
+                      <Route
+                          path='/game/*'
+                          element={
+                              <RequireAuth>
+                                  <GameRoutes/>
+                              </RequireAuth>
+                          }
+                      />
+                  </Routes>
+              </Layout>
           </BrowserRouter>
       </ProvideAuth>
 

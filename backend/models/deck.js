@@ -17,6 +17,7 @@ const DeckSchema = new Schema({
     }
 });
 
+// get colors of a player
 DeckSchema.methods.getPlayerColors = function() {
     const colors = []
     for (const card of this.cards) {

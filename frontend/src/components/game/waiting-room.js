@@ -33,16 +33,13 @@ export default function WaitingRoom() {
     }, [game.isStart, navigate])
 
     return (
-        <Container>
-            <Logo />
-            <Row className='justify-content-center'>
-                <Spinner animation="border" role="status"  variant="white">
-                    <span className="visually-hidden">Loading...</span>
-                </Spinner>
-                <div>
-                    <p className='text-center text-white'>En attente du lancement de la partie ...</p>
-                </div>
-            </Row>
-        </Container>
+        <Row className='justify-content-center'>
+            <Spinner animation="border" role="status"  variant="white">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            <div>
+                <p className='text-center text-white'>En attente du lancement de la partie ...</p>
+            </div>
+        </Row>
     )
 }

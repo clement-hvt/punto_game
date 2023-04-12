@@ -17,14 +17,17 @@ function useProvideGame() {
 
     const auth = useAuth()
 
-    const [cardPositions, setCardPositions] = useState([])
-    const [gameId, setGameId] = useState(null)
-    const [socketIo, setSocketIo] = useState(null)
-    const [isStart, setIsStart] = useState(false)
-    const [currentCard, setCurrentCard] = useState({})
+    const [cardPositions, setCardPositions] = useState([]) // an array with the positions of the card placed in the game board
+    const [gameId, setGameId] = useState(null) // store the current game id
+    const [socketIo, setSocketIo] = useState(null) // the socket io connection for emit and receive msg
+    const [isStart, setIsStart] = useState(false) // set if the game is start or not
+    const [currentCard, setCurrentCard] = useState({}) // set the current card in the deck
+    const [msgEndGame, setMsgEndGame] = useState("") // the endgame message if there is a winner
     const isFirstCard = useRef(true)
 
     /**
+     * Add card to the game board, verification is process in backend
+     *
      * @param number x
      * @param x
      * @param y
@@ -39,6 +42,7 @@ function useProvideGame() {
             cardId
         })
             .then(({data}) => {
+                // refresh the game board
                 setCardPositions((previousCardPositions) => {
                     previousCardPositions[x][y] = {color, number}
                     return previousCardPositions
@@ -53,6 +57,14 @@ function useProvideGame() {
             })
     }
 
+    /**
+     * Refresh board if a player placed a card
+     *
+     * @param x
+     * @param y
+     * @param color
+     * @param number
+     */
     const addCardFromOtherPlayer = (x, y, {color, number}) => {
         setCardPositions((previousCardPositions) => {
             previousCardPositions[x][y] = {color, number}
@@ -62,6 +74,14 @@ function useProvideGame() {
             isFirstCard.current = false
         }
     }
+
+    /**
+     * check if the placed card has a card around it
+     *
+     * @param x
+     * @param y
+     * @return {boolean}
+     */
     const hasCardAround = (x, y) => {
         let hasCardAround = false;
         if (x && y) {
@@ -89,6 +109,14 @@ function useProvideGame() {
         }
         return hasCardAround
     }
+
+    /**
+     * check if the card can be dropped
+     * @param x
+     * @param y
+     * @param number
+     * @return {boolean}
+     */
     const canDrop = (x, y, {number}) => {
         const isOccupied = squareIsOccupied(x, y)
         return (isOccupied && isOccupied.number < number) || (!isOccupied && hasCardAround(x, y))
@@ -100,10 +128,10 @@ function useProvideGame() {
 
     useEffect(() => {
         if(socketIo && !isStart) {
+
+            // intercept socket with 'join-game' event and check if the game is started or not
             socketIo.emit('join-game', {userId: auth.userId, gameId}, ({status, msg, isStart}) => {
                 if (status === 'success') {
-                    console.log(msg)
-
                     if (isStart) {
                         setIsStart(true)
                     } else {
@@ -122,6 +150,7 @@ function useProvideGame() {
         }
     }, [auth.userId, gameId, isStart, socketIo])
 
+    // add socket event listener if a game is run
     const calledOnce = useRef(false)
     useEffect(() => {
         if (!isStart || calledOnce.current) return
@@ -134,16 +163,27 @@ function useProvideGame() {
             setCardPositions(cardPositionsTmp)
         }
 
+        // listen if the next card is placed and refresh the deck
         socketIo.on('next-card', ({card}) => {
             setCurrentCard(card)
         })
 
+        // listen if a player placed a card
         socketIo.on('card-placed', ({move, card}) => {
             addCardFromOtherPlayer(move.posX, move.posY, card)
         })
 
+        // listen if the game is finished
+        socketIo.on('finished', ({playerId}) => {
+            if (playerId === auth.userId) {
+                setMsgEndGame('Congratulations you have won the game.')
+            } else {
+                setMsgEndGame(`Player ${playerId} won.`)
+            }
+        })
+
         calledOnce.current = true;
-    }, [cardPositions, isStart, socketIo])
+    }, [cardPositions, isStart, socketIo, auth])
 
     return {
         cardPositions,
@@ -151,6 +191,7 @@ function useProvideGame() {
         socketIo,
         isStart,
         currentCard,
+        msgEndGame,
         setSocketIo,
         setGameId,
         addCardToBoard,

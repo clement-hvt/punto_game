@@ -19,7 +19,7 @@ exports.register = asyncHandler(async (req, res) => {
         }
         await user.save();
         const token = user.getToken()
-        console.log(token)
+
         res.send({token, id: user._id});
     } else {
         res.status(409).send({error: "Account already exists."});

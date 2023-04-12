@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 require('../models/gameMove')
-const GameMove = mongoose.model('GameMove')
 
 const Schema = mongoose.Schema
 const GameSchema = new Schema({
@@ -58,7 +57,7 @@ GameSchema.methods.cardCanBeHad = function (posX, posY, card) {
             hasCardAround = true
         }
     }
-    if (posX === 5 && posY === 5) {
+    if (posX === 5 && posY === 5) { // allow it to have no card near it  if it's the first card
         hasCardAround = true
     }
 
@@ -74,6 +73,8 @@ GameSchema.methods.isWinning = function (playerColors) {
 
     let followedCards = 1
     let isWinning = false
+
+    // check recursively a suite of cards
     function checkPosition(previousCard, startPointX, startPointY , nextX, nextY) {
 
         const nextCard = cardPositions?.[startPointX + nextX]?.[startPointY + nextY]
@@ -102,11 +103,11 @@ GameSchema.methods.isWinning = function (playerColors) {
             if (cardPositions[i]?.[j + 1]?.color === card.color && !isWinning) { // check below
                 checkPosition(cardPositions[i]?.[j + 1], i, j, 0, 1)
             }
-            if (cardPositions?.[i + 1]?.[j + 1]?.color === card.color) { // check diagonally right
+            if (cardPositions?.[i + 1]?.[j + 1]?.color === card.color && !isWinning) { // check diagonally right
                 checkPosition(cardPositions?.[i + 1]?.[j + 1], i, j, 1, 1)
             }
-            if (cardPositions?.[i - 1]?.[j - 1]?.color === card.color && !isWinning) { // check diagonally left
-                checkPosition(cardPositions?.[i - 1]?.[j - 1], i, j, -1, -1)
+            if (cardPositions?.[i - 1]?.[j + 1]?.color === card.color && !isWinning) { // check diagonally left
+                checkPosition(cardPositions?.[i - 1]?.[j + 1], i, j, -1, 1)
             }
         }
     }

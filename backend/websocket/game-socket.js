@@ -103,6 +103,10 @@ class GameSocket {
         })
     }
 
+    static emitWinner(gameId, playerId) {
+        GameSocket.io.to(gameId).emit('finished', {playerId})
+    }
+
     static emitCardPlaced(gameId, roomId, card, move) {
         GameSocket.io.to(gameId).except(roomId).emit('card-placed', {card, move})
     }
